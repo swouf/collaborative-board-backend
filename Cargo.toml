@@ -1,0 +1,26 @@
+[package]
+name = "collaborative-ideation-backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# "?" is shorter than ".unwrap()"
+anyhow = "1"
+# full features because of laziness
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.21"
+# import the greatest framework
+axum = { version = "0.7", default-features = true, features = ["ws"]}
+futures = "0.3"
+tower-http = { version = "0.6.1", features = ["fs", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }
+hyper = "1.0"
+ts-rs = "11.0"
+
+[build-dependencies]
+ts-rs = "11.0"
