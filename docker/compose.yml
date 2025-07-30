@@ -1,0 +1,28 @@
+# For dev only
+# Use root/example as user/password credentials
+
+name: collaborative-ideation-backend
+
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_USER: app
+      MARIADB_PASSWORD: thepasswordthatneedstobechanged
+      MARIADB_DATABASE: app-db
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  db-data:

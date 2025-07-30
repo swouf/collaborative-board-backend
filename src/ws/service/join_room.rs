@@ -2,10 +2,7 @@ use axum::extract::ws::Message;
 use tokio::sync::mpsc;
 use tracing::{Level, event};
 
-use crate::ws::{
-    message::{ClientMessage, JoinRoomMessage, ServerMessage, UpdateDocMessage},
-    room::{Room, Rooms},
-};
+use crate::ws::{message::{ClientMessage, JoinRoomMessage, ServerMessage, UpdateDocMessage}, room::{Room, Rooms}};
 
 // pub async fn handle(data: JoinRoomMessage, rooms: Rooms, tx: mpsc::Sender<Message>, current_room_id: Arc<Mutex<Option<String>>>) {
 pub async fn handle(

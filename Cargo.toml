@@ -21,6 +21,9 @@ serde_json = "1"
 uuid = { version = "1", features = ["v4"] }
 hyper = "1.0"
 ts-rs = "11.0"
+diesel = { version = "2.2.0", features = ["mysql"] }
+deadpool-diesel = { version = "0.6.1", features = ["mysql"] }
+dotenvy = "0.15"
 
 [build-dependencies]
 ts-rs = "11.0"
