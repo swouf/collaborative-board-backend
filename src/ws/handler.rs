@@ -3,10 +3,10 @@ use axum::{
     extract::{State, WebSocketUpgrade},
     response::IntoResponse,
 };
-use deadpool_diesel::mysql::Pool;
+use deadpool_diesel::postgres::Pool;
 use futures::{SinkExt, StreamExt};
 use tokio::sync::mpsc;
-use tracing::{Level, error, event, instrument};
+use tracing::{Level, error, event};
 use uuid::Uuid;
 
 use crate::ws::message::{ClientMessage, ServerMessage};
@@ -71,7 +71,7 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                             )),
                         };
                         if let Ok(err_msg_str) = serde_json::to_string(&err_msg) {
-                            if tx.send(Message::Text(err_msg_str)).await.is_err() {
+                            if tx.send(Message::Text(err_msg_str.into())).await.is_err() {
                                 error!("Error when sending error message.")
                             }
                         }

@@ -3,7 +3,7 @@ use crate::infra::db::schema::updates;
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = updates)]
-#[diesel(check_for_backend(diesel::mysql::Mysql))]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct DocUpdate {
     pub id: i32,
     pub room_id: String,

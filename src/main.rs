@@ -4,7 +4,7 @@ mod infra;
 mod models;
 
 use axum::{Router, routing::get};
-use deadpool_diesel::mysql::Pool;
+use deadpool_diesel::postgres::Pool;
 use infra::db::db::setup_connection_pool;
 use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
@@ -29,7 +29,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let config = load_config();
+    let config = load_config().unwrap();
 
     let rooms: Rooms = Arc::new(Mutex::new(HashMap::<String, Room>::new()));
 

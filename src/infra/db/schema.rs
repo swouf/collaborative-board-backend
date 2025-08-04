@@ -2,9 +2,8 @@
 
 diesel::table! {
     updates (id) {
-        id -> Integer,
-        #[max_length = 255]
+        id -> Int4,
         room_id -> Varchar,
-        payload -> Longblob,
+        payload -> Bytea,
     }
 }

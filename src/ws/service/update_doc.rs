@@ -1,4 +1,4 @@
-use deadpool_diesel::mysql::Pool;
+use deadpool_diesel::postgres::Pool;
 use tracing::{Level, event};
 use diesel::{insert_into, RunQueryDsl};
 

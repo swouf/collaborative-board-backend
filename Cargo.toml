@@ -7,10 +7,10 @@ edition = "2024"
 # "?" is shorter than ".unwrap()"
 anyhow = "1"
 # full features because of laziness
-tokio = { version = "1", features = ["full"] }
-tokio-tungstenite = "0.21"
+tokio = { version = "1.47", features = ["full"] }
+tokio-tungstenite = "0.27"
 # import the greatest framework
-axum = { version = "0.7", default-features = true, features = ["ws"]}
+axum = { version = "0.8", default-features = true, features = ["ws"]}
 futures = "0.3"
 tower-http = { version = "0.6.1", features = ["fs", "trace"] }
 tracing = "0.1"
@@ -21,8 +21,8 @@ serde_json = "1"
 uuid = { version = "1", features = ["v4"] }
 hyper = "1.0"
 ts-rs = "11.0"
-diesel = { version = "2.2.0", features = ["mysql"] }
-deadpool-diesel = { version = "0.6.1", features = ["mysql"] }
+diesel = { version = "2.2.0", features = ["postgres"] }
+deadpool-diesel = { version = "0.6.1", features = ["postgres"] }
 dotenvy = "0.15"
 
 [build-dependencies]

@@ -34,7 +34,7 @@ pub async fn handle(
                             payload: data.payload,
                         });
                         let _ = tx_clone
-                            .send(Message::Text(serde_json::to_string(&msg).unwrap()))
+                            .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
                             .await;
                     }
                     ClientMessage::JoinRoom(join_room_message) => {
@@ -50,7 +50,7 @@ pub async fn handle(
         message: None,
     };
     let confirm = tx
-        .send(Message::Text(serde_json::to_string(&msg).unwrap()))
+        .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
         .await;
     match confirm {
         Ok(_) => {

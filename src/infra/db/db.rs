@@ -1,4 +1,4 @@
-use deadpool_diesel::mysql::{Pool, Manager};
+use deadpool_diesel::postgres::{Pool, Manager};
 use deadpool_diesel::Runtime::Tokio1;
 use tracing::{event, span, Level};
 use diesel::prelude::*;
