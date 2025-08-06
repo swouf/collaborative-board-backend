@@ -18,21 +18,30 @@ pub async fn handle(
     );
     if let Some(room_id) = &current_room_id {
         let rooms_lock = rooms.lock().await;
-        if let Some(room) = rooms_lock.get(room_id) {
-            let msg = ClientMessage::UpdateDoc(UpdateDocMessage {
-                payload: data.payload.clone(),
-            });
-            event!(Level::DEBUG, "Message ready to be sent.");
-            let _ = room.sender.send((conn_id.clone(), msg));
-        } else {
-            event!(Level::WARN, "Unable to get room with id {}", room_id);
-        }
 
-        let update_payload = data.payload;
+        let update_payload = data.payload.clone();
         let update_buffer: Vec<u8> = update_payload
             .chars()
             .map(|c| c as u32 as u8)  // convert char -> u32 -> u8 (truncates like TypeScript)
             .collect();
+
+        if let Some(room) = rooms_lock.get(room_id) {
+            let msg = ClientMessage::UpdateDoc(UpdateDocMessage {
+                payload: data.payload,
+            });
+            event!(Level::DEBUG, "Message ready to be sent.");
+            let _ = room.sender.send((conn_id.clone(), msg));
+
+            let _ = room.state.import(&update_buffer).map_err(|err| event!(Level::ERROR, "Error in updating document.\n{}", err));
+        } else {
+            event!(Level::WARN, "Unable to get room with id {}", room_id);
+        }
+
+        // let update_payload = data.payload;
+        // let update_buffer: Vec<u8> = update_payload
+        //     .chars()
+        //     .map(|c| c as u32 as u8)  // convert char -> u32 -> u8 (truncates like TypeScript)
+        //     .collect();
 
         let room_id_copy = room_id.clone();
         let insertable_doc_update = NewDocUpdate {

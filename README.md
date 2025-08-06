@@ -6,3 +6,9 @@
     diesel migration run
     ```
 - Start the app
+
+## Building
+
+```bash
+docker build -t collaborative-ideation-backend .
+```
