@@ -1,16 +1,19 @@
-mod ws;
 mod config;
 mod infra;
 mod models;
+mod ws;
 
 use axum::{Router, routing::get};
+use config::load_config;
 use deadpool_diesel::postgres::Pool;
 use infra::db::db::setup_connection_pool;
 use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use ws::{handler::ws_handler, room::{Room, Rooms}};
-use config::load_config;
+use ws::{
+    handler::ws_handler,
+    room::{Room, Rooms},
+};
 
 #[derive(Clone)]
 struct AppState {
@@ -37,12 +40,10 @@ async fn main() {
 
     let app = Router::new()
         .route("/ws", get(ws_handler))
-        .with_state(
-            AppState {
-                rooms,
-                db_connection_pool
-            }
-        );
+        .with_state(AppState {
+            rooms,
+            db_connection_pool,
+        });
 
     // run it with hyper
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3433")

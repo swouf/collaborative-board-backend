@@ -9,14 +9,20 @@ use tokio::sync::mpsc;
 use tracing::{Level, error, event};
 use uuid::Uuid;
 
+use crate::AppState;
 use crate::ws::message::{ClientMessage, ServerMessage};
 use crate::ws::room::Rooms;
-use crate::AppState;
 
 use super::message::JoinRoomMessage;
 use super::service::{join_room, update_doc};
 
-pub async fn ws_handler(ws: WebSocketUpgrade, State(AppState { rooms, db_connection_pool }): State<AppState>) -> impl IntoResponse {
+pub async fn ws_handler(
+    ws: WebSocketUpgrade,
+    State(AppState {
+        rooms,
+        db_connection_pool,
+    }): State<AppState>,
+) -> impl IntoResponse {
     ws.on_upgrade(|socket| handle_socket(socket, rooms, db_connection_pool))
 }
 
@@ -51,10 +57,24 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                 // if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&text) {
                 Ok(client_msg) => match client_msg {
                     ClientMessage::JoinRoom(data) => {
-                        join_room::handle(data, &rooms, &tx, &mut current_room_id, &db_connection_pool).await
+                        join_room::handle(
+                            data,
+                            &rooms,
+                            &tx,
+                            &mut current_room_id,
+                            &db_connection_pool,
+                        )
+                        .await
                     }
                     ClientMessage::UpdateDoc(data) => {
-                        update_doc::handle(data, &rooms, &db_connection_pool, &conn_id, &current_room_id).await
+                        update_doc::handle(
+                            data,
+                            &rooms,
+                            &db_connection_pool,
+                            &conn_id,
+                            &current_room_id,
+                        )
+                        .await
                     }
                 },
                 Err(_) => {

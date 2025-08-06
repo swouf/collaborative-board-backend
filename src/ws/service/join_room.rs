@@ -1,42 +1,45 @@
 use std::collections::hash_map::Entry;
 
+use crate::infra::db::schema::updates::{room_id, table};
 use axum::extract::ws::Message;
 use deadpool_diesel::postgres::Pool;
 use diesel::prelude::*;
 use tokio::sync::mpsc;
 use tracing::{Level, event};
-use crate::infra::db::schema::updates::{table, room_id};
 
-use crate::{models::doc_update::DocUpdate, ws::{message::{ClientMessage, JoinRoomMessage, ServerMessage, UpdateDocMessage}, room::{Room, Rooms}}};
+use crate::{
+    models::doc_update::DocUpdate,
+    ws::{
+        message::{ClientMessage, JoinRoomMessage, ServerMessage, UpdateDocMessage},
+        room::{Room, Rooms},
+    },
+};
 
-async fn create_new_room(
-    new_room_id: String,
-    db_connection_pool: &Pool,
-) -> Room {
+async fn create_new_room(new_room_id: String, db_connection_pool: &Pool) -> Room {
     let conn = db_connection_pool.get().await.unwrap();
-        let result = conn
-            .interact(|conn| {
-                table
-                    .filter(room_id.eq(new_room_id))
-                    .select(DocUpdate::as_select())
-                    .load(conn)
-            })
-            .await.map_err(
-                |err| {
-                    event!(Level::ERROR, "DB interaction error: {}", err);
-                }
-            ).unwrap();
+    let result = conn
+        .interact(|conn| {
+            table
+                .filter(room_id.eq(new_room_id))
+                .select(DocUpdate::as_select())
+                .load(conn)
+        })
+        .await
+        .map_err(|err| {
+            event!(Level::ERROR, "DB interaction error: {}", err);
+        })
+        .unwrap();
 
-        match result {
-            Ok(doc_updates) => {
-                return Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect());
-            }
-            Err(err) => {
-                event!(Level::ERROR, "Impossible to create new room. Error {}", err);
-                panic!("Oups");
-            }
-        };
-    }
+    match result {
+        Ok(doc_updates) => {
+            return Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect());
+        }
+        Err(err) => {
+            event!(Level::ERROR, "Impossible to create new room. Error {}", err);
+            panic!("Oups");
+        }
+    };
+}
 // pub async fn handle(data: JoinRoomMessage, rooms: Rooms, tx: mpsc::Sender<Message>, current_room_id: Arc<Mutex<Option<String>>>) {
 pub async fn handle(
     data: JoinRoomMessage,
@@ -49,12 +52,10 @@ pub async fn handle(
     let JoinRoomMessage { id, user_id } = data;
     let room_entry = rooms_lock.entry(id.clone());
     let room = match room_entry {
-        Entry::Occupied(occupied_entry) => {
-            occupied_entry.into_mut()
-        },
+        Entry::Occupied(occupied_entry) => occupied_entry.into_mut(),
         Entry::Vacant(vacant_entry) => {
             vacant_entry.insert(create_new_room(id.clone(), db_connection_pool).await)
-        },
+        }
     };
     let mut room_rx = room.sender.subscribe();
 

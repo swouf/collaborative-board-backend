@@ -1,5 +1,5 @@
-use diesel::prelude::*;
 use crate::infra::db::schema::updates;
+use diesel::prelude::*;
 
 pub type DocUpdatePayload = Vec<u8>;
 

@@ -1,8 +1,15 @@
 use deadpool_diesel::postgres::Pool;
+use diesel::{RunQueryDsl, insert_into};
 use tracing::{Level, event};
-use diesel::{insert_into, RunQueryDsl};
 
-use crate::{infra::db::schema::updates::dsl::updates, models::doc_update::NewDocUpdate, ws::{message::{ClientMessage, UpdateDocMessage}, room::Rooms}};
+use crate::{
+    infra::db::schema::updates::dsl::updates,
+    models::doc_update::NewDocUpdate,
+    ws::{
+        message::{ClientMessage, UpdateDocMessage},
+        room::Rooms,
+    },
+};
 
 pub async fn handle(
     data: UpdateDocMessage,
@@ -22,7 +29,7 @@ pub async fn handle(
         let update_payload = data.payload.clone();
         let update_buffer: Vec<u8> = update_payload
             .chars()
-            .map(|c| c as u32 as u8)  // convert char -> u32 -> u8 (truncates like TypeScript)
+            .map(|c| c as u32 as u8) // convert char -> u32 -> u8 (truncates like TypeScript)
             .collect();
 
         if let Some(room) = rooms_lock.get(room_id) {
@@ -32,7 +39,10 @@ pub async fn handle(
             event!(Level::DEBUG, "Message ready to be sent.");
             let _ = room.sender.send((conn_id.clone(), msg));
 
-            let _ = room.state.import(&update_buffer).map_err(|err| event!(Level::ERROR, "Error in updating document.\n{}", err));
+            let _ = room
+                .state
+                .import(&update_buffer)
+                .map_err(|err| event!(Level::ERROR, "Error in updating document.\n{}", err));
         } else {
             event!(Level::WARN, "Unable to get room with id {}", room_id);
         }
@@ -48,7 +58,7 @@ pub async fn handle(
             room_id: room_id_copy,
             payload: update_buffer,
         };
-        
+
         let conn = db_connection_pool.get().await.unwrap();
         let _ = conn
             .interact(|conn| {
@@ -56,10 +66,10 @@ pub async fn handle(
                     .values(insertable_doc_update)
                     .execute(conn)
             })
-            .await.map_err(
-                |err| {
-                    event!(Level::ERROR, "DB interaction error: {}", err);
-                }
-            ).unwrap();
+            .await
+            .map_err(|err| {
+                event!(Level::ERROR, "DB interaction error: {}", err);
+            })
+            .unwrap();
     }
 }

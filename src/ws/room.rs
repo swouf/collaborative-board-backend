@@ -2,16 +2,16 @@ use std::{collections::HashMap, sync::Arc};
 
 use loro::LoroDoc;
 use tokio::sync::{Mutex, broadcast};
-use tracing::{event, Level};
+use tracing::{Level, event};
 
-use crate::models::doc_update::{DocUpdatePayload};
+use crate::models::doc_update::DocUpdatePayload;
 
 use super::message::ClientMessage;
 
 #[derive(Debug)]
 pub struct Room {
     pub sender: broadcast::Sender<(String, ClientMessage)>, // (user_id, content)
-    pub state: LoroDoc, 
+    pub state: LoroDoc,
 }
 
 impl Room {
@@ -20,9 +20,16 @@ impl Room {
         let doc = LoroDoc::new();
         match doc.import_batch(&updates) {
             Ok(_) => event!(Level::DEBUG, "Building document success."),
-            Err(err) => event!(Level::ERROR, "Error building the document from stored updates.\n{}", err),
+            Err(err) => event!(
+                Level::ERROR,
+                "Error building the document from stored updates.\n{}",
+                err
+            ),
         }
-        Self { sender: tx, state: doc }
+        Self {
+            sender: tx,
+            state: doc,
+        }
     }
 }
 
