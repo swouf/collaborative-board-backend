@@ -14,7 +14,7 @@ pub async fn setup_connection_pool(db_url: String) -> Pool {
     let pool = Pool::builder(manager).build().unwrap();
 
     let conn = pool.get().await.unwrap();
-    let _res = conn
+    conn
         .interact(|conn| {
             updates
                 .select(DocUpdate::as_select())

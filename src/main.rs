@@ -6,7 +6,7 @@ mod ws;
 use axum::{Router, routing::get};
 use config::load_config;
 use deadpool_diesel::postgres::Pool;
-use infra::db::db::setup_connection_pool;
+use infra::db::setup::setup_connection_pool;
 use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};

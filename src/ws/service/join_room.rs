@@ -32,13 +32,13 @@ async fn create_new_room(new_room_id: String, db_connection_pool: &Pool) -> Room
 
     match result {
         Ok(doc_updates) => {
-            return Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect());
+            Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect())
         }
         Err(err) => {
             event!(Level::ERROR, "Impossible to create new room. Error {}", err);
             panic!("Oups");
         }
-    };
+    }
 }
 // pub async fn handle(data: JoinRoomMessage, rooms: Rooms, tx: mpsc::Sender<Message>, current_room_id: Arc<Mutex<Option<String>>>) {
 pub async fn handle(

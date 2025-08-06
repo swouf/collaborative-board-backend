@@ -15,7 +15,7 @@ pub async fn handle(
     data: UpdateDocMessage,
     rooms: &Rooms,
     db_connection_pool: &Pool,
-    conn_id: &String,
+    conn_id: &str,
     current_room_id: &Option<String>,
 ) {
     event!(
@@ -37,7 +37,7 @@ pub async fn handle(
                 payload: data.payload,
             });
             event!(Level::DEBUG, "Message ready to be sent.");
-            let _ = room.sender.send((conn_id.clone(), msg));
+            let _ = room.sender.send((String::from(conn_id), msg));
 
             let _ = room
                 .state

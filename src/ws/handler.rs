@@ -85,10 +85,9 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                     let r = serde_json::to_string(&example_join);
                     if let Ok(ex_str) = r {
                         let err_msg = ServerMessage::Error {
-                            message: String::from(format!(
-                                "I could not interpret your message. Please, join a room.\nExample:\n{}",
-                                ex_str
-                            )),
+                            message: format!(
+                                "I could not interpret your message. Please, join a room.\nExample:\n{ex_str}"
+                            ),
                         };
                         if let Ok(err_msg_str) = serde_json::to_string(&err_msg) {
                             if tx.send(Message::Text(err_msg_str.into())).await.is_err() {

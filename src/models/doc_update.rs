@@ -6,6 +6,7 @@ pub type DocUpdatePayload = Vec<u8>;
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = updates)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
+#[allow(dead_code)]
 pub struct DocUpdate {
     pub id: i32,
     pub room_id: String,
