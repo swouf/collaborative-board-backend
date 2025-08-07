@@ -12,10 +12,10 @@ pub struct UpdateDocMessage {
     pub payload: String,
 }
 
-// #[derive(Debug, Serialize, Deserialize, Clone, TS)]
-// pub struct GetDocMessage {
-//     versionVector:
-// }
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
+pub struct GetDocMessage {
+    pub version_vector: Option<String>,
+}
 
 #[derive(Serialize, Deserialize, Clone, TS)]
 #[serde(tag = "type", content = "data", rename_all = "snake_case")]
@@ -23,6 +23,7 @@ pub struct UpdateDocMessage {
 pub enum ClientMessage {
     JoinRoom(JoinRoomMessage),
     UpdateDoc(UpdateDocMessage),
+    GetDoc(GetDocMessage),
 }
 
 #[derive(Serialize, TS)]

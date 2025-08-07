@@ -31,9 +31,7 @@ async fn create_new_room(new_room_id: String, db_connection_pool: &Pool) -> Room
         .unwrap();
 
     match result {
-        Ok(doc_updates) => {
-            Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect())
-        }
+        Ok(doc_updates) => Room::new(doc_updates.iter().map(|up| up.payload.clone()).collect()),
         Err(err) => {
             event!(Level::ERROR, "Impossible to create new room. Error {}", err);
             panic!("Oups");
@@ -79,8 +77,8 @@ pub async fn handle(
                             .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
                             .await;
                     }
-                    ClientMessage::JoinRoom(_) => {
-                        todo!("A join room message shouldn't get here.")
+                    _ => {
+                        event!(Level::WARN, "Invalid message. It shouldn't get here.")
                     }
                 }
             }

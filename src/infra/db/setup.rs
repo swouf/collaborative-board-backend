@@ -14,15 +14,14 @@ pub async fn setup_connection_pool(db_url: String) -> Pool {
     let pool = Pool::builder(manager).build().unwrap();
 
     let conn = pool.get().await.unwrap();
-    conn
-        .interact(|conn| {
-            updates
-                .select(DocUpdate::as_select())
-                .load(conn)
-                .expect("Oups");
-        })
-        .await
-        .unwrap();
+    conn.interact(|conn| {
+        updates
+            .select(DocUpdate::as_select())
+            .load(conn)
+            .expect("Oups");
+    })
+    .await
+    .unwrap();
 
     // event!(Level::DEBUG, "Content: {}", res);
     // run the migrations on server startup
