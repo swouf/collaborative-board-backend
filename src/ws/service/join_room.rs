@@ -10,7 +10,7 @@ use tracing::{Level, event};
 use crate::{
     models::doc_update::DocUpdate,
     ws::{
-        message::{ClientMessage, JoinRoomMessage, ServerMessage, UpdateDocMessage},
+        message::{JoinRoomMessage, ServerMessage},
         room::{Room, Rooms},
     },
 };
@@ -66,24 +66,14 @@ pub async fn handle(
 
     // Subscribe task
     tokio::spawn(async move {
-        while let Ok((uid, content)) = room_rx.recv().await {
+        while let Ok((uid, msg)) = room_rx.recv().await {
             if uid != user_id_clone {
-                match content {
-                    ClientMessage::UpdateDoc(data) => {
-                        let msg = ServerMessage::UpdateDoc(UpdateDocMessage {
-                            payload: data.payload,
-                        });
-                        let _ = tx_clone
-                            .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
-                            .await;
-                    }
-                    _ => {
-                        event!(Level::WARN, "Invalid message. It shouldn't get here.")
-                    }
+                let _ = tx_clone
+                    .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
+                    .await;
                 }
             }
-        }
-    });
+        });
 
     let msg = ServerMessage::Confirm {
         message_type: String::from("join_room"),

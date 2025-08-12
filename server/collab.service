@@ -1,0 +1,16 @@
+# Should be placed at /etc/systemd/system/collab.service 
+[Unit]
+Description=Collaborative ideation backend
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/
+ExecStart=/usr/local/bin/collaborative-ideation-backend
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/usr/local/etc/collaborative-ideation-backend.env
+SyslogIdentifier=collab
+
+[Install]
+WantedBy=multi-user.target

@@ -13,6 +13,11 @@ pub struct UpdateDocMessage {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
+pub struct UpdateTmpStateMessage {
+    pub payload: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, TS)]
 pub struct GetDocMessage {
     pub version_vector: Option<String>,
 }
@@ -23,10 +28,11 @@ pub struct GetDocMessage {
 pub enum ClientMessage {
     JoinRoom(JoinRoomMessage),
     UpdateDoc(UpdateDocMessage),
+    UpdateTmpState(UpdateTmpStateMessage),
     GetDoc(GetDocMessage),
 }
 
-#[derive(Serialize, TS)]
+#[derive(Serialize, TS, Clone)]
 #[serde(tag = "type", content = "data", rename_all = "snake_case")]
 #[ts(export)]
 pub enum ServerMessage {
@@ -35,6 +41,7 @@ pub enum ServerMessage {
         message: Option<String>,
     },
     UpdateDoc(UpdateDocMessage),
+    UpdateTmpState(UpdateTmpStateMessage),
     Error {
         message: String,
     },

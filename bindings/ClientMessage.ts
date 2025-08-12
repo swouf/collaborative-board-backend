@@ -2,5 +2,6 @@
 import type { GetDocMessage } from "./GetDocMessage";
 import type { JoinRoomMessage } from "./JoinRoomMessage";
 import type { UpdateDocMessage } from "./UpdateDocMessage";
+import type { UpdateTmpStateMessage } from "./UpdateTmpStateMessage";
 
-export type ClientMessage = { "type": "join_room", "data": JoinRoomMessage } | { "type": "update_doc", "data": UpdateDocMessage } | { "type": "get_doc", "data": GetDocMessage };
+export type ClientMessage = { "type": "join_room", "data": JoinRoomMessage } | { "type": "update_doc", "data": UpdateDocMessage } | { "type": "update_tmp_state", "data": UpdateTmpStateMessage } | { "type": "get_doc", "data": GetDocMessage };

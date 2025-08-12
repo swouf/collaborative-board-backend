@@ -15,7 +15,7 @@ use crate::ws::room::Rooms;
 use crate::ws::service::get_doc;
 
 use super::message::JoinRoomMessage;
-use super::service::{join_room, update_doc};
+use super::service::{join_room, update_doc, update_tmp_state};
 
 pub async fn ws_handler(
     ws: WebSocketUpgrade,
@@ -72,6 +72,15 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                             data,
                             &rooms,
                             &db_connection_pool,
+                            &conn_id,
+                            &current_room_id,
+                        )
+                        .await
+                    }
+                    ClientMessage::UpdateTmpState(data) => {
+                        update_tmp_state::handle(
+                            data,
+                            &rooms,
                             &conn_id,
                             &current_room_id,
                         )

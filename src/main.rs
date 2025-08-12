@@ -15,6 +15,8 @@ use ws::{
     room::{Room, Rooms},
 };
 
+use crate::config::AppConfig;
+
 #[derive(Clone)]
 struct AppState {
     rooms: Rooms,
@@ -32,11 +34,11 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let config = load_config().unwrap();
+    let AppConfig { database_url, port} = load_config().unwrap();
 
     let rooms: Rooms = Arc::new(Mutex::new(HashMap::<String, Room>::new()));
 
-    let db_connection_pool = setup_connection_pool(config.database_url).await;
+    let db_connection_pool = setup_connection_pool(database_url).await;
 
     let app = Router::new()
         .route("/ws", get(ws_handler))
@@ -46,7 +48,7 @@ async fn main() {
         });
 
     // run it with hyper
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3433")
+    let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{port}"))
         .await
         .unwrap();
 

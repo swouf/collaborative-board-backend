@@ -6,7 +6,7 @@ use crate::{
     infra::db::schema::updates::dsl::updates,
     models::doc_update::NewDocUpdate,
     ws::{
-        message::{ClientMessage, UpdateDocMessage},
+        message::{ServerMessage, UpdateDocMessage},
         room::Rooms,
     },
 };
@@ -33,7 +33,7 @@ pub async fn handle(
             .collect();
 
         if let Some(room) = rooms_lock.get(room_id) {
-            let msg = ClientMessage::UpdateDoc(UpdateDocMessage {
+            let msg = ServerMessage::UpdateDoc(UpdateDocMessage {
                 payload: data.payload,
             });
             event!(Level::DEBUG, "Message ready to be sent.");
