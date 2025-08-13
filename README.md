@@ -10,5 +10,5 @@
 ## Building
 
 ```bash
-docker build -t collaborative-ideation-backend .
+docker build -t collaborative-ideation-backend --output=./collaborative-ideation-backend .
 ```

@@ -78,13 +78,7 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                         .await
                     }
                     ClientMessage::UpdateTmpState(data) => {
-                        update_tmp_state::handle(
-                            data,
-                            &rooms,
-                            &conn_id,
-                            &current_room_id,
-                        )
-                        .await
+                        update_tmp_state::handle(data, &rooms, &conn_id, &current_room_id).await
                     }
                     ClientMessage::GetDoc(_) => {
                         get_doc::handle(&rooms, &tx, &current_room_id).await

@@ -34,7 +34,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let AppConfig { database_url, port} = load_config().unwrap();
+    let AppConfig { database_url, port } = load_config().unwrap();
 
     let rooms: Rooms = Arc::new(Mutex::new(HashMap::<String, Room>::new()));
 

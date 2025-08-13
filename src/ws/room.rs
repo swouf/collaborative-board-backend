@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use loro::{awareness::EphemeralStore, LoroDoc};
+use loro::{LoroDoc, awareness::EphemeralStore};
 use tokio::sync::{Mutex, broadcast};
 use tracing::{Level, event};
 

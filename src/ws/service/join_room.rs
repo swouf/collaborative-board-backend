@@ -71,9 +71,9 @@ pub async fn handle(
                 let _ = tx_clone
                     .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
                     .await;
-                }
             }
-        });
+        }
+    });
 
     let msg = ServerMessage::Confirm {
         message_type: String::from("join_room"),

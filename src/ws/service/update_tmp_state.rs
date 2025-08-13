@@ -1,12 +1,9 @@
-
 use tracing::{Level, event};
 
-use crate::
-    ws::{
-        message::{ServerMessage, UpdateTmpStateMessage},
-        room::Rooms,
-    }
-;
+use crate::ws::{
+    message::{ServerMessage, UpdateTmpStateMessage},
+    room::Rooms,
+};
 
 pub async fn handle(
     data: UpdateTmpStateMessage,
@@ -14,10 +11,7 @@ pub async fn handle(
     conn_id: &str,
     current_room_id: &Option<String>,
 ) {
-    event!(
-        Level::DEBUG,
-        "New TMP state update"
-    );
+    event!(Level::DEBUG, "New TMP state update");
     if let Some(room_id) = &current_room_id {
         let rooms_lock = rooms.lock().await;
 
@@ -34,9 +28,7 @@ pub async fn handle(
             event!(Level::DEBUG, "Message ready to be sent.");
             let _ = room.sender.send((String::from(conn_id), msg));
 
-            let _ = room
-                .tmp_state
-                .apply(&update_buffer);
+            room.tmp_state.apply(&update_buffer);
         } else {
             event!(Level::WARN, "Unable to get room with id {}", room_id);
         }
