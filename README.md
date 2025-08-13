@@ -10,5 +10,12 @@
 ## Building
 
 ```bash
-docker build -t collaborative-ideation-backend --output=./collaborative-ideation-backend .
+docker build -t collaborative-ideation-backend --output=./build .
+```
+
+
+## Deploying
+
+```bash
+deploy.sh <path-to-connection-key> <server-ip>
 ```

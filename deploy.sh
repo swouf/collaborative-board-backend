@@ -67,12 +67,14 @@ scp -i "$PEM_PATH" $SERVICE_PATH "$REMOTE_USER@$HOST_IP:~/app/collab.service"
 echo "🔧 Running remote configuration on $HOST_IP..."
 ssh -i "$PEM_PATH" "$REMOTE_USER@$HOST_IP" <<'EOF'
     set -e
+    sudo systemctl stop collab.service
     sudo cp ~/app/collaborative-ideation-backend /usr/local/bin/
     sudo chown ec2-user:ec2-user /usr/local/bin/collaborative-ideation-backend
     sudo cp ~/app/collaborative-ideation-backend.env /usr/local/etc/
     sudo chown ec2-user:ec2-user /usr/local/etc/collaborative-ideation-backend.env
     sudo cp ~/app/collab.service /etc/systemd/system/collab.service
-    sudo systemctl restart collab.service
+    sudo systemctl daemon-reload
+    sudo systemctl start collab.service
 EOF
 
 echo "✅ Deployment complete."

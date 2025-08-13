@@ -2,6 +2,7 @@ mod config;
 mod infra;
 mod models;
 mod ws;
+mod health;
 
 use axum::{Router, routing::get};
 use config::load_config;
@@ -15,7 +16,7 @@ use ws::{
     room::{Room, Rooms},
 };
 
-use crate::config::AppConfig;
+use crate::{config::AppConfig, health::health};
 
 #[derive(Clone)]
 struct AppState {
@@ -40,15 +41,19 @@ async fn main() {
 
     let db_connection_pool = setup_connection_pool(database_url).await;
 
-    let app = Router::new()
-        .route("/ws", get(ws_handler))
+    let ws_router = Router::new()
+        .route("/", get(ws_handler))
         .with_state(AppState {
             rooms,
             db_connection_pool,
         });
 
+    let app = Router::new()
+        .route("/health", get(health))
+        .nest("/ws", ws_router);
+
     // run it with hyper
-    let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{port}"))
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
         .await
         .unwrap();
 
