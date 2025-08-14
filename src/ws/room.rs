@@ -28,6 +28,7 @@ impl Room {
                 err
             ),
         }
+
         Self {
             sender: tx,
             state: doc,

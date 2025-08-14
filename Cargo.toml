@@ -26,6 +26,7 @@ deadpool-diesel = { version = "0.6.1", features = ["postgres"] }
 dotenvy = "0.15"
 loro = "1.5.11"
 diesel_migrations = "2.2.0"
+rllm = { version = "1.1.9", features = ["openai", "ollama"] }
 
 [build-dependencies]
 ts-rs = "11.0"

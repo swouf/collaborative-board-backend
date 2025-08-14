@@ -12,7 +12,7 @@ use uuid::Uuid;
 use crate::AppState;
 use crate::ws::message::{ClientMessage, ServerMessage};
 use crate::ws::room::Rooms;
-use crate::ws::service::get_doc;
+use crate::ws::service::{get_doc, query_ai};
 
 use super::message::JoinRoomMessage;
 use super::service::{join_room, update_doc, update_tmp_state};
@@ -82,6 +82,9 @@ async fn handle_socket(socket: WebSocket, rooms: Rooms, db_connection_pool: Pool
                     }
                     ClientMessage::GetDoc(_) => {
                         get_doc::handle(&rooms, &tx, &current_room_id).await
+                    }
+                    ClientMessage::QueryAI(data) => {
+                        query_ai::handle(data, &rooms, &tx, &current_room_id).await
                     }
                 },
                 Err(_) => {

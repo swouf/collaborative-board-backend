@@ -1,8 +1,9 @@
+mod ai;
 mod config;
+mod health;
 mod infra;
 mod models;
 mod ws;
-mod health;
 
 use axum::{Router, routing::get};
 use config::load_config;

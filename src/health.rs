@@ -1,6 +1,6 @@
 use axum::Json;
-use serde_json::{json, Value};
-use tracing::{event, Level};
+use serde_json::{Value, json};
+use tracing::{Level, event};
 
 pub async fn health() -> Json<Value> {
     const HEALTH_STATUS: bool = true;
