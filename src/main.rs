@@ -52,7 +52,6 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health))
         .nest("/ws", ws_router);
-
     // run it with hyper
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
         .await

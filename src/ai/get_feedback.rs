@@ -5,8 +5,7 @@ use rllm::{
 };
 use tracing::{Level, event};
 
-const SYSTEM_PROMPT: &str =
-    "You are an helpful assistant providing feedback on ideas that are given to you.";
+const SYSTEM_PROMPT: &str = "You are an helpful assistant providing feedback on ideas that are given to you. Always conclude your feedback with a question that steer the user to a more creative idea.";
 
 pub async fn get_feedback(response0: &String) -> Option<String> {
     // Get Ollama server URL from environment variable or use default localhost

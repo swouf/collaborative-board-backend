@@ -1,4 +1,5 @@
 use axum::extract::ws::Message;
+use loro::{LoroValue, loro_value};
 use tokio::sync::mpsc;
 use tracing::{Level, event};
 
@@ -24,16 +25,19 @@ pub async fn handle(
 
         if let Some(room) = rooms_lock.get(room_id) {
             let responses = room.state.get_list("responses");
-            let first_response = responses.get(0).unwrap(); // TODO: Handle error instead of unwrap
+            let first_response = responses
+                .get(0)
+                .unwrap()
+                .into_value()
+                .unwrap()
+                .into_map()
+                .unwrap(); // TODO: Handle error instead of unwrap
             // print!("First response: {:#?}", first_response);
 
             // This is a test.
 
             let first_response_str = first_response
-                .into_value()
-                .unwrap()
-                .into_map()
-                .unwrap()
+                .clone()
                 .get("response")
                 .unwrap()
                 .clone()
@@ -50,6 +54,24 @@ pub async fn handle(
                         message_type: String::from("query_ai"),
                         message: Some(response_payload),
                     };
+                    let mut r_clone = first_response.clone();
+                    let updated_response = r_clone.make_mut();
+
+                    updated_response.insert(String::from("feedback"), loro_value!(response));
+
+                    event!(
+                        Level::DEBUG,
+                        "Here is the updated response: {:#?}",
+                        updated_response
+                    );
+
+                    responses.delete(0, 1).unwrap();
+                    responses.insert(0, LoroValue::Map(r_clone)).unwrap();
+
+                    event!(Level::DEBUG, "Responses updated:\n{:#?}", responses);
+
+                    room.state.commit();
+
                     tx.send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
                         .await
                         .unwrap();
