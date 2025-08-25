@@ -5,7 +5,9 @@ use tokio::sync::{Mutex, broadcast};
 use tracing::{Level, event};
 
 use crate::{
-    constants::TIMEOUT_MS, models::doc_update::DocUpdatePayload, ws::message::UpdateDocMessage,
+    constants::TIMEOUT_MS,
+    models::doc_update::DocUpdatePayload,
+    ws::{message::UpdateDocMessage, ws_codec::encode},
 };
 
 use super::message::ServerMessage;
@@ -36,7 +38,7 @@ impl Room {
 
         let subscription =
             doc.subscribe_local_update(Box::new(move |local_update: &Vec<u8>| -> bool {
-                let update_str = local_update.iter().map(|&b| b as char).collect();
+                let update_str = encode(local_update);
                 event!(Level::DEBUG, "New local update: {}", update_str);
                 let msg = ServerMessage::UpdateDoc(UpdateDocMessage {
                     payload: update_str,

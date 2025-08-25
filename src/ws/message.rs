@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -27,7 +29,7 @@ pub struct GetDocMessage {
 #[derive(Debug, Serialize, Deserialize, Clone, TS)]
 pub struct QueryAIMessage {
     pub verb: AIQueries,
-    pub parameters: Option<String>,
+    pub parameters: Option<HashMap<String, String>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, TS)]
