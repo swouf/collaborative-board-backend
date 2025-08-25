@@ -4,7 +4,9 @@ use loro::{LoroDoc, Subscription, awareness::EphemeralStore};
 use tokio::sync::{Mutex, broadcast};
 use tracing::{Level, event};
 
-use crate::{models::doc_update::DocUpdatePayload, ws::message::UpdateDocMessage};
+use crate::{
+    constants::TIMEOUT_MS, models::doc_update::DocUpdatePayload, ws::message::UpdateDocMessage,
+};
 
 use super::message::ServerMessage;
 
@@ -20,7 +22,7 @@ impl Room {
     pub fn new(updates: Vec<DocUpdatePayload>) -> Self {
         let (tx, _rx) = broadcast::channel(100);
         let doc = LoroDoc::new();
-        let tmp_state = EphemeralStore::new(30000); // TODO: Factor out.
+        let tmp_state = EphemeralStore::new(TIMEOUT_MS.try_into().unwrap()); // TODO: Factor out.
         match doc.import_batch(&updates) {
             Ok(_) => event!(Level::DEBUG, "Building document success."),
             Err(err) => event!(

@@ -1,5 +1,6 @@
 mod ai;
 mod config;
+mod constants;
 mod health;
 mod infra;
 mod models;
@@ -39,8 +40,10 @@ async fn main() {
     let AppConfig { database_url, port } = load_config().unwrap();
 
     let rooms: Rooms = Arc::new(Mutex::new(HashMap::<String, Room>::new()));
+    let rooms2 = rooms.clone();
 
     let db_connection_pool = setup_connection_pool(database_url).await;
+    let db_connection_pool2 = db_connection_pool.clone();
 
     let ws_router = Router::new()
         .route("/", get(ws_handler))
@@ -49,9 +52,14 @@ async fn main() {
             db_connection_pool,
         });
 
-    let app = Router::new()
+    let health_router = Router::new()
         .route("/health", get(health))
-        .nest("/ws", ws_router);
+        .with_state(AppState {
+            rooms: rooms2,
+            db_connection_pool: db_connection_pool2,
+        });
+
+    let app = Router::new().merge(health_router).nest("/ws", ws_router);
     // run it with hyper
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}"))
         .await

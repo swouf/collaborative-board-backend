@@ -27,7 +27,7 @@ pub async fn get_feedback(response0: &String) -> Option<String> {
     // Prepare conversation history with example messages
     let messages = vec![ChatMessage {
         role: ChatRole::User,
-        content: format!("What do you think about this idea:\n{}", response0).into(),
+        content: format!("What do you think about this idea:\n{response0}"),
         message_type: MessageType::Text,
     }];
 

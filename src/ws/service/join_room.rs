@@ -1,10 +1,13 @@
-use std::collections::hash_map::Entry;
+use std::{collections::hash_map::Entry, sync::Weak};
 
-use crate::infra::db::schema::updates::{room_id, table};
+use crate::{
+    constants::TIMEOUT_DURATION,
+    infra::db::schema::updates::{room_id, table},
+};
 use axum::extract::ws::Message;
 use deadpool_diesel::postgres::Pool;
 use diesel::prelude::*;
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, time::timeout};
 use tracing::{Level, event};
 
 use crate::{
@@ -45,6 +48,7 @@ pub async fn handle(
     tx: &mpsc::Sender<Message>,
     current_room_id: &mut Option<String>,
     db_connection_pool: &Pool,
+    keep_alive: Weak<bool>,
 ) {
     let mut rooms_lock = rooms.lock().await;
     let JoinRoomMessage { id, user_id } = data;
@@ -66,13 +70,20 @@ pub async fn handle(
 
     // Subscribe task
     tokio::spawn(async move {
-        while let Ok((uid, msg)) = room_rx.recv().await {
-            if uid != user_id_clone {
-                let _ = tx_clone
-                    .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
-                    .await;
+        while keep_alive.upgrade().is_some() {
+            if let Ok(Ok((uid, msg))) = timeout(TIMEOUT_DURATION, room_rx.recv()).await {
+                if uid != user_id_clone {
+                    let _ = tx_clone
+                        .send(Message::Text(serde_json::to_string(&msg).unwrap().into()))
+                        .await;
+                }
             }
         }
+        event!(
+            Level::DEBUG,
+            "Subscribing task for connection user id {} exiting...",
+            user_id_clone
+        );
     });
 
     let msg = ServerMessage::Confirm {
