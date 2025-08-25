@@ -1,6 +1,6 @@
 # Base image with Rust for building and running the app.
 # Taken from https://github.com/rust-lang/docker-rust/blob/master/stable/bullseye/Dockerfile
-FROM amazonlinux:2023.8.20250715.0 as base
+FROM amazonlinux:2023.8.20250808.1 as base
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
