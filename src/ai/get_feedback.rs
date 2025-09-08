@@ -64,7 +64,9 @@ pub async fn get_feedback(query: QueryAIMessage, room: &Room) -> Result<String, 
     // Prepare conversation history with example messages
     let messages = vec![ChatMessage {
         role: ChatRole::User,
-        content: format!("What do you think about this idea:\n{response_content}"),
+        content: format!("What do you think about this idea:\n{response_content}
+        \n\n
+        Try to be concise with your answer. Limit it to about 250 characters."),
         message_type: MessageType::Text,
     }];
 
